@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace UnityEngine.InputNew
+﻿namespace UnityEngine.InputNew
 {
-	public class TrackingEvent
-		: InputEvent
-	{
-		public Vector3 localPosition { get; set; }
-		public Quaternion localRotation { get; set; }
-	}
+    /**
+     * Event for tracking input.
+     */
+    public class TrackingEvent : InputEvent
+    {
+        /**
+         * Local position
+         */
+        public Vector3 localPosition { get; set; }
+        /**
+         * Local rotation
+         */
+        public Quaternion localRotation { get; set; }
+    }
 }

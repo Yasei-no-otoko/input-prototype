@@ -4,8 +4,14 @@ using Assets.Utilities;
 
 namespace UnityEngine.InputNew
 {
+    /**
+     * Input device that supports positional and rotational tracking.
+     */
     public class TrackedDevice : InputDevice
     {
+        /**
+         * Control supported by a tracked device.
+         */
         protected enum TrackedDeviceControl
         {
             // Axes
@@ -22,9 +28,17 @@ namespace UnityEngine.InputNew
             LocalRotation
         }
 
+        /**
+         * Default constructor.
+         */
         public TrackedDevice() 
             : this("TrackedDevice", null) { }
 
+        /**
+         * Constructor given a device name and additional controls.
+         * @param deviceName Name of the input device
+         * @param additionalControls List of additional input control data
+         */
         public TrackedDevice(string deviceName, List<InputControlData> additionalControls)
         {
             this.deviceName = deviceName;
