@@ -196,7 +196,7 @@ namespace UnityEngine.InputNew
 			if (axisEvent != null)
 				consumed |= intoState.SetCurrentValue((int)VRControl.Analog0 + (int)axisEvent.controlIndex, axisEvent.value);
             
-			var trackingEvent = inputEvent as VREvent;
+			var trackingEvent = inputEvent as TrackingEvent;
 			if (trackingEvent != null)
 			{
 				consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionX, trackingEvent.localPosition.x);
