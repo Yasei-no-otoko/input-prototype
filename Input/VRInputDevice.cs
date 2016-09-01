@@ -60,6 +60,12 @@ namespace UnityEngine.InputNew
 			//Share,
 			//View,
 			//Options
+
+            // These are here to avoid compile errors in Carte Blanche since it uses these controls
+            Action1Near,
+            Action2Near,
+            Trigger1Near,
+            LeftStickButtonNear
 		}
 
 	    private static readonly string[] kTags = { "Left", "Right"};
