@@ -4,14 +4,33 @@ using Assets.Utilities;
 
 namespace UnityEngine.InputNew
 {
-    /**
-     * Input device that supports positional and rotational tracking.
-     */
+    ///
+    /// Input device that supports positional and rotational tracking.
+    ///
     public class TrackedDevice : InputDevice
     {
-        /**
-         * Control supported by a tracked device.
-         */
+        //=================
+        // Private
+        //=================
+
+        const string k_TrackedDeviceName    = "Tracked Device";
+        const string k_LocalPositionXName   = "Local Position X";
+        const string k_LocalPositionYName   = "Local Position Y";
+        const string k_LocalPositionZName   = "Local Position Z";
+        const string k_LocalRotationXName   = "Local Rotation X";
+        const string k_LocalRotationYName   = "Local Rotation Y";
+        const string k_LocalRotationZName   = "Local Rotation Z";
+        const string k_LocalRotationWName   = "Local Rotation W";
+        const string k_LocalPositionName    = "Local Position";
+        const string k_LocalRotationName    = "Local Rotation";
+
+        //=================
+        // Protected
+        //=================
+
+        ///
+        /// Control supported by a tracked device.
+        ///
         protected enum TrackedDeviceControl
         {
             // Axes
@@ -28,47 +47,52 @@ namespace UnityEngine.InputNew
             LocalRotation
         }
 
-        /**
-         * Default constructor.
-         */
-        public TrackedDevice() 
-            : this("TrackedDevice", null) { }
+        //=================
+        // Public
+        //=================
 
-        /**
-         * Constructor given a device name and additional controls.
-         * @param deviceName Name of the input device
-         * @param additionalControls List of additional input control data
-         */
+        ///
+        /// Default constructor.
+        ///
+        public TrackedDevice() 
+            : this(k_TrackedDeviceName, null) { }
+
+        ///
+        /// Constructor given a device name and additional controls.
+        ///
+        /// @param deviceName Name of the input device
+        /// @param additionalControls List of additional input control data
+        ///
         public TrackedDevice(string deviceName, List<InputControlData> additionalControls)
         {
             this.deviceName = deviceName;
             var controlCount = EnumHelpers.GetValueCount<TrackedDeviceControl>();
             var controls = Enumerable.Repeat(new InputControlData(), controlCount).ToList();
+            
+            // Axes
+            controls[(int)TrackedDeviceControl.LocalPositionX] = new InputControlData { name = k_LocalPositionXName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalPositionY] = new InputControlData { name = k_LocalPositionYName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalPositionZ] = new InputControlData { name = k_LocalPositionZName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalRotationX] = new InputControlData { name = k_LocalRotationXName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalRotationY] = new InputControlData { name = k_LocalRotationYName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalRotationZ] = new InputControlData { name = k_LocalRotationZName, controlType = typeof(AxisInputControl) };
+            controls[(int)TrackedDeviceControl.LocalRotationW] = new InputControlData { name = k_LocalRotationWName, controlType = typeof(AxisInputControl) };
 
             // Compounds
             controls[(int)TrackedDeviceControl.LocalPosition] = new InputControlData
             {
-                name = "Local Position",
+                name = k_LocalPositionName,
                 controlType = typeof(Vector3InputControl),
                 componentControlIndices = new[] { (int)TrackedDeviceControl.LocalPositionX,
                     (int)TrackedDeviceControl.LocalPositionY, (int)TrackedDeviceControl.LocalPositionZ }
             };
             controls[(int)TrackedDeviceControl.LocalRotation] = new InputControlData
             {
-                name = "Local Rotation",
+                name = k_LocalRotationName,
                 controlType = typeof(QuaternionInputControl),
                 componentControlIndices = new[] { (int)TrackedDeviceControl.LocalRotationX, (int)TrackedDeviceControl.LocalRotationY,
                     (int)TrackedDeviceControl.LocalRotationZ, (int)TrackedDeviceControl.LocalRotationW }
             };
-
-            // Axes
-            controls[(int)TrackedDeviceControl.LocalPositionX] = new InputControlData { name = "Local Position X", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalPositionY] = new InputControlData { name = "Local Position Y", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalPositionZ] = new InputControlData { name = "Local Position Z", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalRotationX] = new InputControlData { name = "Local Rotation X", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalRotationY] = new InputControlData { name = "Local Rotation Y", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalRotationZ] = new InputControlData { name = "Local Rotation Z", controlType = typeof(AxisInputControl) };
-            controls[(int)TrackedDeviceControl.LocalRotationW] = new InputControlData { name = "Local Rotation W", controlType = typeof(AxisInputControl) };
 
             if (additionalControls != null)
             {
@@ -76,11 +100,6 @@ namespace UnityEngine.InputNew
             }
 
             SetControls(controls);
-        }
-
-        protected int GetTotalControlCount()
-        {
-            return EnumHelpers.GetValueCount<TrackedDeviceControl>();
         }
 
         // Axis controls
@@ -108,13 +127,13 @@ namespace UnityEngine.InputNew
             var trackingEvent = inputEvent as TrackingEvent;
             if (trackingEvent != null)
             {
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionX, trackingEvent.localPosition.x);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionY, trackingEvent.localPosition.y);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionZ, trackingEvent.localPosition.z);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationX, trackingEvent.localRotation.x);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationY, trackingEvent.localRotation.y);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationZ, trackingEvent.localRotation.z);
-                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationW, trackingEvent.localRotation.w);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionX, trackingEvent.localPose.position.x);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionY, trackingEvent.localPose.position.y);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalPositionZ, trackingEvent.localPose.position.z);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationX, trackingEvent.localPose.rotation.x);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationY, trackingEvent.localPose.rotation.y);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationZ, trackingEvent.localPose.rotation.z);
+                consumed |= intoState.SetCurrentValue((int)TrackedDeviceControl.LocalRotationW, trackingEvent.localPose.rotation.w);
             }
 
             return consumed;

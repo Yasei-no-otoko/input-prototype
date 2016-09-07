@@ -60,12 +60,6 @@ namespace UnityEngine.InputNew
 			//Share,
 			//View,
 			//Options
-
-            // These are here to avoid compile errors in Carte Blanche since it uses these controls
-            Action1Near,
-            Action2Near,
-            Trigger1Near,
-            LeftStickButtonNear
 		}
 
 	    private static readonly string[] kTags = { "Left", "Right"};
@@ -204,16 +198,16 @@ namespace UnityEngine.InputNew
             
 			var trackingEvent = inputEvent as TrackingEvent;
 			if (trackingEvent != null)
-			{
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionX, trackingEvent.localPosition.x);
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionY, trackingEvent.localPosition.y);
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionZ, trackingEvent.localPosition.z);
+            {
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionX, trackingEvent.localPose.position.x);
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionY, trackingEvent.localPose.position.y);
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalPositionZ, trackingEvent.localPose.position.z);
 
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationX, trackingEvent.localRotation.x);
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationY, trackingEvent.localRotation.y);
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationZ, trackingEvent.localRotation.z);
-				consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationW, trackingEvent.localRotation.w);
-			}
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationX, trackingEvent.localPose.rotation.x);
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationY, trackingEvent.localPose.rotation.y);
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationZ, trackingEvent.localPose.rotation.z);
+                consumed |= intoState.SetCurrentValue((int)VRControl.LocalRotationW, trackingEvent.localPose.rotation.w);
+            }
 
 			return consumed;
 		}

@@ -66,13 +66,12 @@ namespace UnityEngine.InputNew
 		    vrDeviceHMDController2.Hand = VRInputDevice.Handedness.Right;
 
             // TODO: Register different devices depending on enabled SDKs, also figure out what to do about multiple enabled SDKs.
-		    var touchController1 = new TouchController();
-            RegisterDevice(touchController1);
-		    touchController1.Hand = TrackedController.Handedness.Left;
-
-            var touchController2 = new TouchController();
-            RegisterDevice(touchController2);
-            touchController2.Hand = TrackedController.Handedness.Right;
+		    foreach (Handedness hand in Enum.GetValues(typeof(Handedness)))
+		    {
+		        var touchController = new OVRTouchController();
+                RegisterDevice(touchController);
+		        touchController.Hand = hand;
+		    }
         }
 
 		#endregion

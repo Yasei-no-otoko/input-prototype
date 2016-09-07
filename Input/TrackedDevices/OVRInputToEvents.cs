@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UnityEngine.InputNew
 {
     public class OVRInputToEvents : MonoBehaviour
     {
-        const uint k_ControllerCount = 2;
-        Vector3[] m_LastPositionValues = new Vector3[k_ControllerCount];
-        Quaternion[] m_LastRotationValues = new Quaternion[k_ControllerCount];
+        Dictionary<OVRInput.Controller, Pose> m_LastPoseValues = new Dictionary<OVRInput.Controller, Pose>();
+
+        void Start()
+        {
+            m_LastPoseValues[OVRInput.Controller.LTouch] = new Pose { position = Vector3.zero, rotation = Quaternion.identity };
+            m_LastPoseValues[OVRInput.Controller.RTouch] = new Pose { position = Vector3.zero, rotation = Quaternion.identity };
+        }
 
         void Update()
         {
@@ -16,52 +21,47 @@ namespace UnityEngine.InputNew
 
         void QueueTouchControllerEvents()
         {
-            for (var hand = TrackedController.Handedness.Left;
-                (int)hand <= (int)TrackedController.Handedness.Right;
-                hand++)
+            foreach (Handedness hand in Enum.GetValues(typeof(Handedness)))
             {
-                var controller = hand == TrackedController.Handedness.Left
+                var controller = hand == Handedness.Left
                     ? OVRInput.Controller.LTouch
                     : OVRInput.Controller.RTouch;
-                var controllerIndex = controller == OVRInput.Controller.LTouch
-                    ? 0
-                    : 1;
-                QueueControllerTrackingEvent(controller, controllerIndex);
+                QueueControllerTrackingEvent(controller);
             }
         }
 
-        void QueueControllerButtonEvents(OVRInput.Controller ovrController, int controllerIndex)
+        void QueueControllerTrackingEvent(OVRInput.Controller ovrController)
         {
-            foreach (OVRInput.Button button in Enum.GetValues(typeof(OVRInput.Button)))
-            {
-                var isDown = OVRInput.GetDown(button, ovrController);
-                var isUp = OVRInput.GetUp(button, ovrController);
-                
-            }
-        }
-
-        void QueueControllerTrackingEvent(OVRInput.Controller ovrController, int controllerIndex)
-        {
-            var position = OVRInput.GetControllerPositionTracked(ovrController)
+            var controllerPosition = OVRInput.GetControllerPositionTracked(ovrController)
                 ? OVRInput.GetLocalControllerPosition(ovrController)
-                : m_LastPositionValues[controllerIndex];
-            var rotation = OVRInput.GetControllerOrientationTracked(ovrController)
+                : m_LastPoseValues[ovrController].position;
+            var controllerRotation = OVRInput.GetControllerOrientationTracked(ovrController)
                 ? OVRInput.GetLocalControllerRotation(ovrController)
-                : m_LastRotationValues[controllerIndex];
-            if (position != m_LastPositionValues[controllerIndex] ||
-                rotation != m_LastRotationValues[controllerIndex])
+                : m_LastPoseValues[ovrController].rotation;
+            if (controllerPosition != m_LastPoseValues[ovrController].position ||
+                controllerRotation != m_LastPoseValues[ovrController].rotation)
             {
-                m_LastPositionValues[controllerIndex] = position;
-                m_LastRotationValues[controllerIndex] = rotation;
+                m_LastPoseValues[ovrController] = new Pose { position = controllerPosition, rotation = controllerRotation };
 
                 var inputEvent = InputSystem.CreateEvent<TrackingEvent>();
-                inputEvent.deviceType = typeof(TouchController);
-                inputEvent.deviceIndex = controllerIndex;
-                inputEvent.localPosition = position;
-                inputEvent.localRotation = rotation;
+                inputEvent.deviceType = typeof(OVRTouchController);
+                inputEvent.deviceIndex = GetTouchControllerIndex(ovrController);
+                inputEvent.localPose = m_LastPoseValues[ovrController];
 
                 InputSystem.QueueEvent(inputEvent);
             }
+        }
+
+        static int GetTouchControllerIndex(OVRInput.Controller ovrController)
+        {
+            if (ovrController != OVRInput.Controller.LTouch && ovrController != OVRInput.Controller.RTouch)
+            {
+                Debug.LogError("OVR controller is not LTouch or RTouch. Cannot get its device index.");
+                return -1;
+            }
+            return ovrController == OVRInput.Controller.LTouch
+                ? (int)Handedness.Left
+                : (int)Handedness.Right;
         }
     }
 }
